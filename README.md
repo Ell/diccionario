@@ -17,7 +17,7 @@ The word list is stored in a flat file at [words.txt](./words.txt).
 This endpoint checks if a word exists in the word list.
 This endpoint has some issues with it's implementation.
 
-Requirements:
+Expected functionality:
 * It returns a 200 upon success
 * It returns other status codes as appropriate (4XXs for input errors, 5XXs for internal server errors)
 * The response body is a JSON object with a single field `exists` of type boolean
@@ -30,7 +30,7 @@ Requirements:
 This endpoint adds a new word to the word list.
 This endpoint needs to be implemented still.
 
-Requirements:
+Expected functionality:
 * It returns a 204 upon success.
 * It returns a 409 if the word already exists in the word list.
 * It returns other status codes as appropriate (4XXs for input errors, 5XXs for internal server errors)
@@ -42,10 +42,61 @@ Requirements:
 This endpoint returns a list of words that match a given prefix.
 This endpoint needs to be more performant.
 
-Requirements:
+Expected functionality:
 * It returns a 200 upon success
 * It returns other status codes as appropriate (4XXs for input errors, 5XXs for internal server errors)
 * The response body is a JSON object with a single field `matches` of type string array
   * Example: `{ "matches": ["word1", "word2"] }`
 * It performs case insensitive matching to the words in the wordlist
 * It only returns words that match the given prefix
+
+# Go Implementation
+
+All of the Go-related code is in the `go` directory.
+
+From the root of this repo run:
+
+```sh
+docker build -f go/Dockerfile -t diccionario .
+docker run -it -p 8080:8080 -v ./go:/usr/src/diccionario diccionario
+```
+
+The server will be available at http://localhost:8080.
+It will automatically reload when you make changes to the source code
+(it's using [air](https://github.com/air-verse/air)).
+
+To stop the server, press Ctrl+C in the terminal where it's running.
+
+To access the running container, run:
+
+```sh
+docker exec -it `docker ps | grep diccionario | awk '{print $1}'` bash
+```
+
+To exit the terminal session, press Ctrl+D in the terminal where it's running.
+
+# Typescript Implementation
+
+All of the Typescript-related code is in the `ts` directory.
+
+Run `npm install --save-dev` within the `ts` directory to install dependencies.
+
+Then, from the root of this repo run:
+
+```sh
+docker build -f ts/Dockerfile -t diccionario .
+docker run -it -p 5000:5000 -v ./ts:/usr/src/diccionario diccionario
+```
+
+The server will be available at http://localhost:5000.
+It will automatically reload when you make changes to the source code.
+
+To stop the server, press Ctrl+C in the terminal where it's running.
+
+To access the running container, run:
+
+```sh
+docker exec -it `docker ps | grep diccionario | awk '{print $1}'` bash
+```
+
+To exit the terminal session, press Ctrl+D in the terminal where it's running.
