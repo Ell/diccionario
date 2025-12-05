@@ -36,24 +36,16 @@ export class Server {
   private async wordExists(req: Request, res: Response): Promise<void> {
     const word = req.params.word;
 
-    let wordlist: string[];
     try {
-      wordlist = await this.w.getWords();
+      const exists = await this.w.exists(word)
+      const resp: ExistsResponse = { exists }
+
+      res.status(200).json(resp);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'unknown error';
       res.status(400).send(msg);
       return;
     }
-
-    const resp: ExistsResponse = { exists: false };
-
-    for (const w of wordlist) {
-      if (w.startsWith(word)) {
-        resp.exists = true;
-      }
-    }
-
-    res.status(200).json(resp);
   }
 
   // Returns a list of words that matched the given prefix.
@@ -84,6 +76,7 @@ export class Server {
   // Add a new word to the word list.
   private async add(req: Request, res: Response): Promise<void> {
     let body: AddRequest;
+
     try {
       body = req.body as AddRequest;
       if (typeof body.word !== 'string') {
@@ -95,7 +88,15 @@ export class Server {
       return;
     }
 
-    // implement your logic here
+    const exists = await this.w.exists(body.word);
+    if (!exists) {
+      res.status(409).json();
+      return;
+    }
+
+    this.w.addWord(body.word);
+
+    res.status(204).json();
   }
 }
 
